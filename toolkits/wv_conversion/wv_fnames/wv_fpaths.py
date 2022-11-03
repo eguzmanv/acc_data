@@ -107,6 +107,10 @@ def get_wv_fpaths(path: str, fmt_type = None,) -> list:
                 if file.endswith(tuple(f_exts_list)):     
                     fpaths.append(os.path.join(dpath, file))
                 else:
+                            # Ignore .zip files
+                    if file.endswith(tuple(f_exts_not_allowed)):
+                        continue
+
                             # Try to read the file with obspy read() function
                     try:
                         st     = read(os.path.join(dpath, file))                          # stream object
