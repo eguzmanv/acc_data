@@ -2,11 +2,13 @@ import os
 
 from obspy import read
 
+from toolkits.utils import validate
+
 # --------------------------------------------------------
-def get_waveforms_files(path: str, fmt_type = None,) -> list:
+def get_wv_fpaths(path: str, fmt_type = None,) -> list:
     '''
-    - Description: Find the paths of the requested format type located inside an input path.
-                   Format types by default: MSEED, 'EVT', GCF.
+    - Description: Find the waveform paths of the requested format type located inside an 
+                   input path. Format types by default: EVT, GCF, MSEED, SAC.
 
     - Input parameters:
         <<< path     : str
@@ -23,6 +25,9 @@ def get_waveforms_files(path: str, fmt_type = None,) -> list:
         1. Define some useful dictionaries
         2. Append file paths to list
     '''
+
+    validate(get_wv_fpaths, locals())                                                    # validate the type of input parameters
+
     # ==================================
     # 1. Define some useful dictionaries
     # ==================================
@@ -45,11 +50,14 @@ def get_waveforms_files(path: str, fmt_type = None,) -> list:
         # List of waveform formats
     wv_fmts_list = list(wv_fmts_dict.values())
     
+    # Extensiones de archivo no permitidas que obspy puede leer
+    f_exts_not_allowed = ['zip', 'ZIP']
+
     # =========================
     # Append file paths to list
     # =========================
 
-    fpaths = []                                                                                       # empty list of files paths
+    fpaths = []                                                                           # empty list of files paths
     
         # Loop: go through each dirpath, dirs and files in input path
     for dpath, dirs, files in os.walk(path):
@@ -70,14 +78,18 @@ def get_waveforms_files(path: str, fmt_type = None,) -> list:
                     if not file.endswith(tuple(f_exts_list)):     
                                 # Try to read the file with obspy read() function 
                         try:
-                                        # Read stream and get the format type of waveform
-                            st     = read(os.path.join(dpath, file))                                   # stream object
-                            wv_fmt = st[0].stats._format                                               # format type of waveform
-                                                                                                       # e.g. 'KINEMETRICS_EVT' for EVT files
-                                                                                                       # e.g. 'MSEED' for mseed files ...
-                                        # Verify if the file type is in the file extensions
-                            key_idx = list(wv_fmts_dict.values()).index(wv_fmt)                        # file type index
-                            ftype   = list(wv_fmts_dict.keys())[key_idx]                               # file type
+                                    # Ignore .zip files
+                            if file.endswith(tuple(f_exts_not_allowed)):
+                                continue
+                            
+                                    # Read stream and get the format type of waveform
+                            st     = read(os.path.join(dpath, file))                      # stream object
+                            wv_fmt = st[0].stats._format                                  # format type of waveform
+                                                                                          # e.g. 'KINEMETRICS_EVT' for EVT files
+                                                                                          # e.g. 'MSEED' for mseed files ...
+                                    # Verify if the file type is in the file extensions
+                            key_idx = list(wv_fmts_dict.values()).index(wv_fmt)           # file type index
+                            ftype   = list(wv_fmts_dict.keys())[key_idx]                  # file type
 
                             if ftype in f_exts_dict[fmt_type]:
                                 fpaths.append(os.path.join(dpath, file))
@@ -97,7 +109,7 @@ def get_waveforms_files(path: str, fmt_type = None,) -> list:
                 else:
                             # Try to read the file with obspy read() function
                     try:
-                        st     = read(os.path.join(dpath, file))                                       # stream object
+                        st     = read(os.path.join(dpath, file))                          # stream object
                         fpaths.append(os.path.join(dpath, file))
                     except:
                         continue

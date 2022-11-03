@@ -1,5 +1,7 @@
 import obspy
 
+from toolkits.utils import validate
+
 # ------------------------------------------------------------------------
 def set_SEED_naming(tr: obspy.core.trace.Trace, network = None) -> str:
     '''
@@ -21,11 +23,12 @@ def set_SEED_naming(tr: obspy.core.trace.Trace, network = None) -> str:
         2. Rename the channel id (if required)
             >>> output of interers: cha_ (str)
     '''
+    validate(set_SEED_naming, locals())                          # validate the type of input parameters
     
     # ===============================
     # 1. Extract original SEED naming
     # ===============================
-    net, sta, loc, cha = tr.get_id().split('.')            # get net, sta, loc and cha codes from trace id         
+    net, sta, loc, cha = tr.get_id().split('.')                  # get net, sta, loc and cha codes from trace id         
         
         # Some considerations
             
@@ -34,7 +37,7 @@ def set_SEED_naming(tr: obspy.core.trace.Trace, network = None) -> str:
         net = network
 
             # set station code manually
-    sta = 'C' + sta                                             # rename the sta code with a 'C' in front 
+    sta = 'C' + sta                                              # rename the sta code with a 'C' in front 
                 
                 # consider special cases
     if 'LEJ' in sta:                                           
@@ -64,7 +67,7 @@ def set_SEED_naming(tr: obspy.core.trace.Trace, network = None) -> str:
         elif tr.stats.kinemetrics_evt['chan_id'] == 'Z':
             cha += 'Z'                                           # e.g. HNZ --> HNZ
         else:
-            cha = tr.stats.kinemetrics_evt['chan_id']        # for other orientations (e.g. A, B, C, T, R, U, V, W ...)
+            cha = tr.stats.kinemetrics_evt['chan_id']            # for other orientations (e.g. A, B, C, T, R, U, V, W ...)
         
         # _format: ...
 

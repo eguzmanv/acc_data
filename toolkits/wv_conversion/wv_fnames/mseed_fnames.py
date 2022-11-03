@@ -1,13 +1,17 @@
 import os
+
+import obspy
 from obspy import read, UTCDateTime
-from toolkits.get_waveforms_files import get_waveforms_files
+
+from toolkits.utils import validate
+from toolkits.wv_conversion.wv_fnames.wv_fpaths import get_wv_fpaths
 
 # ---------------------------------------
 def rename_uptade_mseed(dpaths: list):
     '''
-    - Description: The goal of this function is to restructure a group of .mseed files in a format 
-                   'net.sta.loc.cha.YYYYMMDDThhmmss' (where 'YYYYMMDDThhmmss' is the starttime of the trace) 
-                   to the format 'net.sta.loc.cha.year.julday'.
+    - Description: Restructure a group of .mseed files in a format 'net.sta.loc.cha.YYYYMMDDThhmmss' 
+                   (where 'YYYYMMDDThhmmss' is the starttime of the trace) to the format 
+                   'net.sta.loc.cha.year.julday'.
                        
                    This function reads a list of dirs paths as input, goes to each file present in each dir 
                    and reads them to define if it needs to be renamed or updated (via the method: 
@@ -26,6 +30,8 @@ def rename_uptade_mseed(dpaths: list):
         2. Rename or overwrite existing files
     '''
     
+    validate(rename_uptade_mseed, locals())                                                    # validate the type of input parameters
+
     # Loop: loop through each directory
     for dpath in dpaths:
 
@@ -49,7 +55,7 @@ def rename_uptade_mseed(dpaths: list):
 
                 julday = UTCDateTime(starttime).julday                                         # julday
 
-                existing_jd_fpath = get_waveforms_files(path = dpath, format = f'{julday:03}') # list a pre-existing file that ends with that julday
+                existing_jd_fpath = get_wv_fpaths(path = dpath, format = f'{julday:03}') # list a pre-existing file that ends with that julday
                 
                 # Condition: does a file exist with that julday in its name? If not rename that file, otherwise, update it
                 if len(existing_jd_fpath) == 0:                                                # renaming the file
