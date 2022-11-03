@@ -6,7 +6,7 @@ from toolkits.utils import validate
 from toolkits.wv_conversion.wv_medatada.SEED_naming import set_SEED_naming
 
 # --------------------------------------------------------------------------------------
-def export_wv(tr: obspy.core.trace.Trace, output_folder: str, network = None):
+def write_mseed(tr: obspy.core.trace.Trace, output_folder: str, network = None):
     '''
     - Description: Export a trace object as format MSEED from a trace, network and 
                    output folder as input.
@@ -32,7 +32,7 @@ def export_wv(tr: obspy.core.trace.Trace, output_folder: str, network = None):
             3. Export mseed file
                 >>> Expected result: .mseed exported
     '''
-    validate(export_wv, locals())                                                                    # validate the type of input parameters
+    validate(write_mseed, locals())                                                                    # validate the type of input parameters
     # ==================
     # 1. Set file naming
     # ==================
