@@ -1,25 +1,26 @@
 import os
+import glob
 
 import obspy
 from obspy import read, UTCDateTime
 
 from toolkits.utils import validate
-from toolkits.wv_conversion.wv_fnames.wv_fpaths import get_wv_fpaths
+from toolkits.wv_conversion.wv_fnames.wv_fpaths import get_wv_fpaths, get_sc_mseed_fpaths
 
 # ---------------------------------------
-def rename_uptade_mseed(dpaths: list):
+def rename_uptade_mseed(ifolder: str):
     '''
     - Description: Restructure a group of .mseed files in a format 'net.sta.loc.cha.YYYYMMDDThhmmss' 
                    (where 'YYYYMMDDThhmmss' is the starttime of the trace) to the format 
                    'net.sta.loc.cha.year.julday'.
                        
-                   This function reads a list of dirs paths as input, goes to each file present in each dir 
+                   This function reads a list of dirs paths, goes to each file present in each dir 
                    and reads them to define if it needs to be renamed or updated (via the method: 
                    obspy.core.stream.Stream.merge).
 
     - Input parameters:
-        <<< dpaths : list
-                     List of directory paths
+        <<< ifolder : str
+                      Path of input folder
 
     - Returns:
         >>> renamed files in the format: 'net.sta.loc.cha.julday'
@@ -32,7 +33,10 @@ def rename_uptade_mseed(dpaths: list):
     
     validate(rename_uptade_mseed, locals())                                                    # validate the type of input parameters
 
-    # Loop: loop through each directory
+    # Get dir paths (paths of each channel dir)
+    dpaths = sorted(glob.glob(os.path.join(ifolder, '*', '*', '*', '*')))
+
+    # Loop: go through each directory
     for dpath in dpaths:
 
         # =============
@@ -55,7 +59,7 @@ def rename_uptade_mseed(dpaths: list):
 
                 julday = UTCDateTime(starttime).julday                                         # julday
 
-                existing_jd_fpath = get_wv_fpaths(path = dpath, format = f'{julday:03}') # list a pre-existing file that ends with that julday
+                existing_jd_fpath = get_sc_mseed_fpaths(dpath = dpath, julday = f'{julday:03}')# list a pre-existing file that ends with that julday
                 
                 # Condition: does a file exist with that julday in its name? If not rename that file, otherwise, update it
                 if len(existing_jd_fpath) == 0:                                                # renaming the file
