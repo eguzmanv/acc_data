@@ -5,8 +5,8 @@ from toolkits.utils import validate
 # ------------------------------------------------------------------------
 def set_SEED_naming(tr: obspy.core.trace.Trace, network = None) -> str:
     '''
-    - Description: This function focuses on reading the stats of an input trace and returns 
-                   the NSLC naming convention as string.
+    - Description: Read the stats of an input trace and returns the NSLC naming 
+                   convention as string.
 
     - Input parameters:
         <<< trace   : obspy.core.trace.Trace
