@@ -121,3 +121,12 @@ def get_wv_fpaths(path: str, fmt_type = None,) -> list:
     return fpaths
 
 
+# ----------------------------------------------------------------
+def get_sc_mseed_fpaths(dpath = str, julday = str):
+    '''
+    - Description: get mseed file paths ending with '.julday' 
+    '''
+
+    file_list = sorted(os.listdir(dpath))
+
+    return [os.path.join(dpath, file) for file in file_list if file.endswith(f'.{julday}')]
