@@ -1,4 +1,6 @@
 import os
+import numpy as np
+
 import obspy
 from obspy import read, UTCDateTime
 
@@ -72,8 +74,14 @@ def write_mseed(tr: obspy.core.trace.Trace, output_folder: str, network = None):
     if not os.path.isdir(os.path.dirname(fpath)):
         os.makedirs(os.path.dirname(fpath))
 
-        # Export file as MSEED
-    tr.write(fpath, format = 'MSEED')
+        # Export file as MSEED with encoding STEIM2
+            # Condition: convert float data to int data
+    if tr.stats._format == 'KINEMETRICS_EVT':
+        
+        if tr.data.dtype in (np.float32, np.float64):
+            tr.data = tr.data.astype(np.int32)
+
+    tr.write(fpath, format = 'MSEED', encoding = 'STEIM2')
 
     print(f'{fpath} | [saved]')
 
@@ -131,7 +139,7 @@ def export_mseeds(fpaths_list: list, ofolder: str):
                     # Trace with starttime < 2000-01-01
             if starttime_ < UTCDateTime('2000-01-01T00:00:00'):
                 reseted_fpaths.append(fpath)
-                break;
+                break
                     
                     # Trace with starttime > 2000-01-01
             else:

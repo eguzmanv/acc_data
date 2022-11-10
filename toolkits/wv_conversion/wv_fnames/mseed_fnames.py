@@ -87,7 +87,7 @@ def rename_uptade_mseed(ifolder: str):
                     st_.merge(method = 1, fill_value = 'interpolate')
 
                     # Overwrite and export the existing file
-                    st_.write(existing_fpath, format = 'MSEED')                                # format: net.sta.loc.cha.D.001
+                    st_.write(existing_fpath, format = 'MSEED', encoding = 'STEIM2')           # format: net.sta.loc.cha.D.001
 
                     # Remove the file in format net.sta.loc.cha.YYYYMMDDThhmmss
                     os.remove(fpath)
